@@ -1,4 +1,7 @@
+import { useNavigation } from '@react-navigation/native';
 import { VStack, Image, Text, Center, Heading, ScrollView } from 'native-base';
+
+import { AuthNavigatorRoutesProps } from '@routes/auth.routes';
 
 import LogoSvg from '@assets/logo.svg';
 import BackgroundImg from '@assets/background.png';
@@ -7,13 +10,22 @@ import { Button } from '@components/Button';
 
 export function SignIn() {
 
+  // Usando a tipagem AuthNavigatorRoutesProps no useNavigation, para apresentar o nome das rotas disponiveis e paramentros.
+  const navigation = useNavigation<AuthNavigatorRoutesProps>();
+
+  function handleNewAccount() {
+    navigation.navigate('signUp')
+  }
+
+
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsHorizontalScrollIndicator={false}>
       {/*Passa o {flexGrow: 1 } *para ocupar toda a tela.*/}
       {/* VStack=> Coloca uma coisa em baixo da outro */}
-      <VStack flex={1} bg={'gray.700'} px={5} pb={16}>
+      <VStack flex={1} px={5} pb={16}>
         <Image // Usando Image com position="absolute" temos mais opções se usar-se o background-Image
           source={BackgroundImg}
+          defaultSource={BackgroundImg} // Entende que a imagem é padrão, então carrega a imagem mais rápido
           alt="Background"
           resizeMode="contain" // O resizeMode como "contain" a imagem não estiva tanto.
           position="absolute" //usamos o absolute para tudo ficar em cima dela
@@ -61,6 +73,7 @@ export function SignIn() {
           <Button
             title='Criar conta'
             variant="outline"
+            onPress={handleNewAccount}
           />
         </Center>
       </VStack>
