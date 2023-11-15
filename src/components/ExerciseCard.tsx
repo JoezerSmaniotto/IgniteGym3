@@ -18,7 +18,7 @@ export function ExerciseCard({ ...rest }: Props) {
           h={16}
           rounded="md"
           mr={4}
-          resizeMode='center' // Manter a imagem centralizada dentro do card
+          resizeMode='cover' //Quando a imagem é pequena em relação ao tamanho defino, o Cover faz encaixar 
         />
 
         <VStack flex={1}>

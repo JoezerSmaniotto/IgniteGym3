@@ -18,6 +18,11 @@ export function Input({ ...rest }: IInputProps) {
         borderWidth: 1,
         borderColor: 'green.500'
       }}
+      _disabled={{// Fiz isso para o input de e-mail na screen Profile, para diferenciar o quando o input estiver disabled
+        bgColor: 'gray.400',
+        opacity: '0.2',
+        color: "white"
+      }}
       {...rest}
     />
   );
