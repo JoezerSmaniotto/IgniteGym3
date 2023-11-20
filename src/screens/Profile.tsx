@@ -47,7 +47,7 @@ export function Profile() {
     } catch (error) {
       console.log(error);
     } finally {
-      setPhotoIsLoading(false)
+      setPhotoIsLoading(false) // Finaliza o loading de carregamento da imagem, no caso Skeleton
     }
 
   }

@@ -1,5 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import { VStack, Image, Text, Center, Heading, ScrollView } from 'native-base';
+import { useForm, Controller } from 'react-hook-form';
 
 import { AuthNavigatorRoutesProps } from '@routes/auth.routes';
 
@@ -8,7 +9,19 @@ import BackgroundImg from '@assets/background.png';
 import { Input } from '@components/Input';
 import { Button } from '@components/Button';
 
+
+type FormDataProps = {
+  name: string,
+  email: string,
+  password: string
+  password_confirm: string,
+};
+
 export function SignUp() {
+  //useForm<FormDataProps>() por causa da tipagem, dentro na Controller na prop Name: já apresenta as opçoes disponiveis com base na tipagem que criei.
+  const { control, handleSubmit, formState: { errors } } = useForm<FormDataProps>();
+  // Usamos o control é quem vai dizer para os inputs quem vai controlar
+  // O Controller por sua vez é quem vai controlar os Inputs
 
   const navigation = useNavigation<AuthNavigatorRoutesProps>();
 
@@ -16,6 +29,10 @@ export function SignUp() {
     navigation.goBack(); // Retorna para a tela anterior.
   }
 
+  function handleSignUp(data: FormDataProps) {
+    console.log(data);
+
+  }
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsHorizontalScrollIndicator={false}>
       {/*Passa o {flexGrow: 1 } *para ocupar toda a tela.*/}
@@ -43,24 +60,77 @@ export function SignUp() {
             Criar sua conta
           </Heading>
 
-          <Input
-            placeholder="Nome"
+          <Controller
+            control={control}
+            name="name" // name é unico para cada input, pq é ele que diferencia cada input
+            rules={{
+              required: 'Informe o nome',
+            }}
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="Nome"
+                onChangeText={onChange}// Para mudança de valores
+                value={value} // Quando definimos o estado inicial
+                errorMessage={errors.name?.message}
+              />
+            )}
           />
 
-          <Input
-            placeholder="E-mail"
-            keyboardType="email-address"
-            autoCapitalize="none" //Mantem as letra em minusculo
+          <Controller
+            control={control}
+            name="email"
+            rules={{
+              required: 'Informe o e-mail',
+              pattern: {
+                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                message: 'E-mail inválido'
+              }
+            }}
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="E-mail"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                onChangeText={onChange}
+                value={value}
+                errorMessage={errors.email?.message}
+              />
+            )}
           />
 
-          <Input
-            placeholder="Senha"
-            secureTextEntry // Input se nha 
+
+          <Controller
+            control={control}
+            name="password"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="Senha"
+                secureTextEntry
+                onChangeText={onChange}
+                value={value}
+              />
+            )}
           />
+
+          <Controller
+            control={control}
+            name="password_confirm"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="Confirmar a Senha"
+                secureTextEntry
+                onChangeText={onChange}
+                value={value}
+                onSubmitEditing={handleSubmit(handleSignUp)} // Faz isso para no neste ultimo input já poder enviar enviar sem precisar clicar no botão especifico, aqui seir ano botão de "OK" do teclado para disparar a função. 
+                returnKeyType='send' // troca o botão OK do teclado pelo de enviar
+              />
+            )}
+          />
+
 
           <Button
             title='Criar a acessar'
-
+            onPress={handleSubmit(handleSignUp)}
           />
         </Center>
 
