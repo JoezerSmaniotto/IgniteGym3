@@ -1,6 +1,8 @@
 import { useNavigation } from '@react-navigation/native';
 import { VStack, Image, Text, Center, Heading, ScrollView } from 'native-base';
 import { useForm, Controller } from 'react-hook-form';
+import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 
 import { AuthNavigatorRoutesProps } from '@routes/auth.routes';
 
@@ -17,9 +19,21 @@ type FormDataProps = {
   password_confirm: string,
 };
 
+
+const signUpSchema = yup.object({
+  name: yup.string().required('Informe o nome.'),
+  email: yup.string().required('Informe o e-mail.').email('E-mail inválido.'),
+  password: yup.string().required('Informe a senha.').min(6, 'A senha  deve ter pelo menos 6 digitos.'),
+  password_confirm: yup.string().required('Confirme a senha.').oneOf([yup.ref('password')], 'A confirmação da senha não confere')
+});
+
+
 export function SignUp() {
   //useForm<FormDataProps>() por causa da tipagem, dentro na Controller na prop Name: já apresenta as opçoes disponiveis com base na tipagem que criei.
-  const { control, handleSubmit, formState: { errors } } = useForm<FormDataProps>();
+  const { control, handleSubmit, formState: { errors } } = useForm<FormDataProps>({
+    resolver: yupResolver(signUpSchema),
+  });
+
   // Usamos o control é quem vai dizer para os inputs quem vai controlar
   // O Controller por sua vez é quem vai controlar os Inputs
 
@@ -63,9 +77,6 @@ export function SignUp() {
           <Controller
             control={control}
             name="name" // name é unico para cada input, pq é ele que diferencia cada input
-            rules={{
-              required: 'Informe o nome',
-            }}
             render={({ field: { onChange, value } }) => (
               <Input
                 placeholder="Nome"
@@ -108,6 +119,7 @@ export function SignUp() {
                 secureTextEntry
                 onChangeText={onChange}
                 value={value}
+                errorMessage={errors.password?.message}
               />
             )}
           />
@@ -123,6 +135,7 @@ export function SignUp() {
                 value={value}
                 onSubmitEditing={handleSubmit(handleSignUp)} // Faz isso para no neste ultimo input já poder enviar enviar sem precisar clicar no botão especifico, aqui seir ano botão de "OK" do teclado para disparar a função. 
                 returnKeyType='send' // troca o botão OK do teclado pelo de enviar
+                errorMessage={errors.password_confirm?.message}
               />
             )}
           />
@@ -137,7 +150,7 @@ export function SignUp() {
         <Button
           title='Voltar para o login'
           variant="outline"
-          mt={24}
+          mt={12}
           onPress={handleGoBack}
         />
 
