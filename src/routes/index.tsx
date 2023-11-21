@@ -18,8 +18,8 @@ export function Routes() {
     // juntamente com o flex:1
     <Box flex={1} bg="gray.700">
       <NavigationContainer theme={theme}>
-        <AppRoutes />
-        {/* <AuthRoutes /> */}
+        {/* <AppRoutes /> */}
+        <AuthRoutes />
       </NavigationContainer>
     </Box>
   )

@@ -1,9 +1,13 @@
+import { Alert } from 'react-native'
 import { useNavigation } from '@react-navigation/native';
 import { VStack, Image, Text, Center, Heading, ScrollView } from 'native-base';
 import { useForm, Controller } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 
+
+import axios from 'axios';
+import { api } from '@services/api'
 import { AuthNavigatorRoutesProps } from '@routes/auth.routes';
 
 import LogoSvg from '@assets/logo.svg';
@@ -44,17 +48,18 @@ export function SignUp() {
   }
 
   async function handleSignUp({ name, email, password }: FormDataProps) {
-    const response = await fetch("http://192.168.1.6:3333/users", {
-      method: "POST",
-      headers: { // Quero enviar como receber no padrão JSON.
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ name, email, password })
-    })
-
-    const data = await response.json();
-    console.log(data);
+    // Rota / Obj de dados
+    try {
+      const response = await api.post('/user', { name, email, password })
+      console.log(response.data);
+    } catch (error) {
+      // Verifica se o Erro vem do AXIOS -> Neste caso se tentar cadastrar
+      // o mesmo e-mail irá apresentar mensagem de erro "Este e-mail já esta cadastrado."
+      if (axios.isAxiosError(error)) {
+        Alert.alert(error.response?.data.message);
+        console.log(error)
+      }
+    }
   }
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsHorizontalScrollIndicator={false}>
