@@ -43,9 +43,18 @@ export function SignUp() {
     navigation.goBack(); // Retorna para a tela anterior.
   }
 
-  function handleSignUp(data: FormDataProps) {
-    console.log(data);
+  async function handleSignUp({ name, email, password }: FormDataProps) {
+    const response = await fetch("http://192.168.1.6:3333/users", {
+      method: "POST",
+      headers: { // Quero enviar como receber no padrão JSON.
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ name, email, password })
+    })
 
+    const data = await response.json();
+    console.log(data);
   }
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsHorizontalScrollIndicator={false}>
