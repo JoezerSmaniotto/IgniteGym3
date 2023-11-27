@@ -1,19 +1,20 @@
 import { Alert } from 'react-native'
 import { useNavigation } from '@react-navigation/native';
-import { VStack, Image, Text, Center, Heading, ScrollView } from 'native-base';
+import { VStack, Image, Text, Center, Heading, ScrollView, useToast } from 'native-base';
 import { useForm, Controller } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 
-
-import axios from 'axios';
 import { api } from '@services/api'
 import { AuthNavigatorRoutesProps } from '@routes/auth.routes';
 
 import LogoSvg from '@assets/logo.svg';
 import BackgroundImg from '@assets/background.png';
+
 import { Input } from '@components/Input';
 import { Button } from '@components/Button';
+
+import { AppError } from '@utils/AppError';
 
 
 type FormDataProps = {
@@ -33,6 +34,9 @@ const signUpSchema = yup.object({
 
 
 export function SignUp() {
+
+  const toast = useToast();
+
   //useForm<FormDataProps>() por causa da tipagem, dentro na Controller na prop Name: já apresenta as opçoes disponiveis com base na tipagem que criei.
   const { control, handleSubmit, formState: { errors } } = useForm<FormDataProps>({
     resolver: yupResolver(signUpSchema),
@@ -53,14 +57,19 @@ export function SignUp() {
       const response = await api.post('/user', { name, email, password })
       console.log(response.data);
     } catch (error) {
-      // Verifica se o Erro vem do AXIOS -> Neste caso se tentar cadastrar
-      // o mesmo e-mail irá apresentar mensagem de erro "Este e-mail já esta cadastrado."
-      if (axios.isAxiosError(error)) {
-        Alert.alert(error.response?.data.message);
-        console.log(error)
-      }
+      // Verifica se o Erro vem da classe que criamos -> Neste caso se tentar cadastrar
+      // o mesmo e-mail irá apresentar mensagem de erro.
+      const isAppError = error instanceof AppError;
+      const title = isAppError ? error.message : 'Não foi possível criar a conta. Por favor tente mais tarde';
+      toast.show({
+        title: 'Erro ao cadastrar',
+        placement: 'top',
+        bgColor: 'red.500'
+      });
     }
+
   }
+
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsHorizontalScrollIndicator={false}>
       {/*Passa o {flexGrow: 1 } *para ocupar toda a tela.*/}
